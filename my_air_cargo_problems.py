@@ -127,10 +127,9 @@ class AirCargoProblem(Problem):
         """
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
-        clauses = set(kb.clauses)
         possible_actions = []
         for action in self.actions_list:
-            if set(action.precond_pos).issubset(clauses):
+            if set(action.precond_pos).issubset(kb.clauses) and set(action.precond_neg).isdisjoint(kb.clauses):
                 possible_actions.append(action)
         return possible_actions
 
@@ -143,10 +142,10 @@ class AirCargoProblem(Problem):
         :param action: Action applied
         :return: resulting state after action
         """
-        kb = PropKB()
         curr_state = decode_state(state, self.state_map)
-        kb.tell(curr_state.pos_sentence())
-        new_state = FluentState(set(kb.clauses).union(action.effect_add).difference(action.effect_rem), curr_state.neg)
+        new_state_pos = list(set(curr_state.pos).difference(action.effect_rem).union(action.effect_add))
+        new_state_neg = list(set(curr_state.neg).difference(action.effect_add).union(action.effect_rem))
+        new_state = FluentState(new_state_pos, new_state_neg)
         return encode_state(new_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:
@@ -187,9 +186,24 @@ class AirCargoProblem(Problem):
         executed.
         '''
         # implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-        kb = PropKB()
-        kb.tell(decode_state(node.state, self.state_map).pos_sentence())
-        return len(self.goal) - len(set(self.goal).intersection(set(kb.clauses)))
+        cover = set(decode_state(node.state, self.state_map).pos)
+        goal = set(self.goal)
+        action_count = 0
+        while not goal.issubset(cover):
+            max_cover_count = len(goal.intersection(cover))
+            max_cover_action = None
+            for action in self.actions_list:
+                action_result = cover.difference(action.effect_rem).union(action.effect_add)
+                cover_count = len(goal.intersection(action_result))
+                if cover_count > max_cover_count:
+                    max_cover_count = cover_count
+                    max_cover_action = action
+            if max_cover_action is None:
+                break # No action improves cover
+            else:
+                cover = cover.difference(max_cover_action.effect_rem).union(max_cover_action.effect_add)
+                action_count += 1
+        return action_count
 
 def air_cargo_p1() -> AirCargoProblem:
     cargos = ['C1', 'C2']
