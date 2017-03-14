@@ -10,7 +10,7 @@
 
 "Air Cargo Problem 1","astar_search with h_1",55,57,224,6,0.05695717502385378
 "Air Cargo Problem 1","astar_search with h_ignore_preconditions",41,43,170,6,0.07709120700019412
-"Air Cargo Problem 1","astar_search with h_pg_levelsum",
+"Air Cargo Problem 1","astar_search with h_pg_levelsum",11,13,50,6,2.6490937560156453
 
 "Air Cargo Problem 2","breadth_first_search",3343,4609,30509,9,14.339981975994306
 "Air Cargo Problem 2","breadth_first_tree_search",

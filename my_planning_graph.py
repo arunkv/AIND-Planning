@@ -543,6 +543,9 @@ class PlanningGraph():
             for node_a2 in node_s2.parents:
                 if not node_a1.is_mutex(node_a2):
                     is_mutex = False
+                    break
+            if not is_mutex:
+                break
         return is_mutex
 
     def h_levelsum(self) -> int:
