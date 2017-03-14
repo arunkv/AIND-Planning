@@ -468,8 +468,22 @@ class PlanningGraph():
         :return: bool
         '''
 
-        # TODO test for Competing Needs between nodes
-        return False
+        # test for Competing Needs between nodes
+        precond_pos_a1 = set(node_a1.action.precond_pos)
+        precond_pos_a2 = set(node_a2.action.precond_pos)
+        action_preconds_mutex = not (precond_pos_a1.issubset(precond_pos_a2) or precond_pos_a2.issubset(precond_pos_a1))
+        parents_mutex = False
+        for parent in node_a1.parents:
+            if len(node_a2.parents.intersection(parent.mutex)) > 0:
+                parents_mutex = True
+            if parents_mutex:
+                break
+        for parent in node_a2.parents:
+            if len(node_a1.parents.intersection(parent.mutex)) > 0:
+                parents_mutex = True
+            if parents_mutex:
+                break
+        return action_preconds_mutex or parents_mutex
 
     def update_s_mutex(self, nodeset: set):
         ''' Determine and update sibling mutual exclusion for S-level nodes
