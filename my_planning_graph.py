@@ -451,8 +451,12 @@ class PlanningGraph():
         :return: bool
         '''
         # test for Interference between nodes
-        effect_of_a1 = set(node_a1.action.precond_pos).difference(node_a1.action.effect_rem).union(node_a1.action.effect_add)
-        effect_of_a2 = set(node_a2.action.precond_pos).difference(node_a2.action.effect_rem).union(node_a2.action.effect_add)
+        #effect_of_a1 = set(node_a1.action.precond_pos).difference(node_a1.action.effect_rem).union(node_a1.action.effect_add)
+        #effect_of_a2 = set(node_a2.action.precond_pos).difference(node_a2.action.effect_rem).union(node_a2.action.effect_add)
+        #return not effect_of_a1.issuperset(node_a2.action.precond_pos) or \
+        #       not effect_of_a2.issuperset(node_a1.action.precond_pos)
+        effect_of_a1 = set(node_a1.action.effect_add)
+        effect_of_a2 = set(node_a2.action.effect_add)
         return not effect_of_a1.issuperset(node_a2.action.precond_pos) or \
                not effect_of_a2.issuperset(node_a1.action.precond_pos)
 

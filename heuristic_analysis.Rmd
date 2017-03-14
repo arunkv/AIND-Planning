@@ -1,11 +1,11 @@
 ---
-title: "AIND Project 3: Planning Solution Search Analysis"
+title: 'AIND Project 3: Planning Solution Search Analysis'
 author: "Arun K Viswanathan"
 date: "3/12/2017"
-output: 
+output:
   pdf_document:
+    fig_height: 10
     latex_engine: xelatex
-    number_sections: true
 ---
 
 ```{r setup, echo=FALSE, include=FALSE}
@@ -14,43 +14,33 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r load-libraries, echo=FALSE, include=FALSE}
 library(ggplot2)
+library(dplyr)
+library(knitr)
 ```
 
 ```{r data, echo=FALSE, include=FALSE}
-df <- read.csv("heuristic_data.csv", header = TRUE, numerals = c("no.loss"))
+df <- read.csv("heuristic_data.csv", header = TRUE, numerals = c("no.loss"),
+               colClasses=c(rep("character",2),rep("numeric",5)))
+df$Problem <- as.factor(df$Problem)
+df$Heuristic <- as.factor(df$Heuristic)
+df <- df[!is.na(df$Plan.Length),]
+
+shortest <- df %>% group_by(Problem) %>% summarize(Shortest.Plan.Length=min(Plan.Length))
+p1_shortest_plan_len <- shortest$Shortest.Plan.Length[1]
+p1_shortest_heuristics = paste(df[df$Problem == 'Air Cargo Problem 1' & df$Plan.Length == p1_shortest_plan_len,]$Heuristic, collapse = ', ')
+p2_shortest_plan_len <- shortest$Shortest.Plan.Length[2]
+p2_shortest_heuristics = paste(df[df$Problem == 'Air Cargo Problem 2' & df$Plan.Length == p2_shortest_plan_len,]$Heuristic, collapse = ', ')
+p3_shortest_plan_len <- shortest$Shortest.Plan.Length[3]
+p3_shortest_heuristics = paste(df[df$Problem == 'Air Cargo Problem 3' & df$Plan.Length == p3_shortest_plan_len,]$Heuristic, collapse = ', ')
 ```
 
-## Overview
+# Overview
 
 This paper discusses the solutions for the three planning problems in the Air Cargo domain described in README.md. 
-All problems use the following action schema:
 
-- Air Cargo Action Schema:
-```
-Action(Load(c, p, a),
-	PRECOND: At(c, a) ∧ At(p, a) ∧ Cargo(c) ∧ Plane(p) ∧ Airport(a)
-	EFFECT: ¬ At(c, a) ∧ In(c, p))
-Action(Unload(c, p, a),
-	PRECOND: In(c, p) ∧ At(p, a) ∧ Cargo(c) ∧ Plane(p) ∧ Airport(a)
-	EFFECT: At(c, a) ∧ ¬ In(c, p))
-Action(Fly(p, from, to),
-	PRECOND: At(p, from) ∧ Plane(p) ∧ Airport(from) ∧ Airport(to)
-	EFFECT: ¬ At(p, from) ∧ At(p, to))
-```
+# Problem 1 
 
-## Problem 1 
-
-The initial state and goal for problem 1 are shown below:
-```
-Init(At(C1, SFO) ∧ At(C2, JFK) 
-	∧ At(P1, SFO) ∧ At(P2, JFK) 
-	∧ Cargo(C1) ∧ Cargo(C2) 
-	∧ Plane(P1) ∧ Plane(P2)
-	∧ Airport(JFK) ∧ Airport(SFO))
-Goal(At(C1, JFK) ∧ At(C2, SFO))
-```
-
-The optimal sequence of actions discovered for this problem is:
+The optimal sequence of actions to solve this problem has `r p1_shortest_plan_len` steps which are show below:
 ```
 Load(C1, P1, SFO)
 Load(C2, P2, JFK)
@@ -59,29 +49,111 @@ Unload(C2, P2, SFO)
 Fly(P1, SFO, JFK)
 Unload(C1, P1, JFK)
 ```
+This plan was discovered using the following searches and heuristics: `r p1_shortest_heuristics`.
 
-
-## Problem 2 
-
-The initial state and goal for problem 2 are shown below:
-```
-Init(At(C1, SFO) ∧ At(C2, JFK) ∧ At(C3, ATL) 
-	∧ At(P1, SFO) ∧ At(P2, JFK) ∧ At(P3, ATL) 
-	∧ Cargo(C1) ∧ Cargo(C2) ∧ Cargo(C3)
-	∧ Plane(P1) ∧ Plane(P2) ∧ Plane(P3)
-	∧ Airport(JFK) ∧ Airport(SFO) ∧ Airport(ATL))
-Goal(At(C1, JFK) ∧ At(C2, SFO) ∧ At(C3, SFO))
+The table below shows how various searches and heuristics performed on this problem:
+```{r p1_table, echo=FALSE, include=TRUE}
+kable(df[df$Problem == 'Air Cargo Problem 1', -which(names(df) %in% c("Problem"))],
+      digits = 3)
 ```
 
-## Problem 3 
+For this problem, the greedy best first search is fastest and also finds the same optimal solution discovered by
+breadth first search. Given the very small number of fluents, the greedy algorithm has very little work in reaching
+the solution.The depth first graph search and depth limited search produce plans with a large number of steps since
+they search redundant actions (e.g: Load followed by an immediate Unload) which effectively don't change the state.
 
-The initial state and goal for problem 3 are shown below:
+# Problem 2 
+
+The optimal sequence of actions to solve this problem has `r p2_shortest_plan_len` steps which are show below:
 ```
-Init(At(C1, SFO) ∧ At(C2, JFK) ∧ At(C3, ATL) ∧ At(C4, ORD) 
-	∧ At(P1, SFO) ∧ At(P2, JFK) 
-	∧ Cargo(C1) ∧ Cargo(C2) ∧ Cargo(C3) ∧ Cargo(C4)
-	∧ Plane(P1) ∧ Plane(P2)
-	∧ Airport(JFK) ∧ Airport(SFO) ∧ Airport(ATL) ∧ Airport(ORD))
-Goal(At(C1, JFK) ∧ At(C3, JFK) ∧ At(C2, SFO) ∧ At(C4, SFO))
+Load(C1, P1, SFO)
+Fly(P1, SFO, JFK)
+Load(C2, P2, JFK)
+Fly(P2, JFK, SFO)
+Load(C3, P3, ATL)
+Fly(P3, ATL, SFO)
+Unload(C3, P3, SFO)
+Unload(C2, P2, SFO)
+Unload(C1, P1, JFK)
+```
+This plan was discovered using the following searches and heuristics: `r p2_shortest_heuristics`.
+
+The table below shows how various searches and heuristics performed on this problem:
+```{r p2_table, echo=FALSE, include=TRUE}
+kable(df[df$Problem == 'Air Cargo Problem 2', -which(names(df) %in% c("Problem"))],
+      digits = 3)
 ```
 
+For this problem, three searches do not run in a reasonable amount of time - breadth first tree search, depth
+limited search and recursive best first search with the h1 heuristic. In all these searches, redundant pairs of
+actions that don't chnage the state add to the size of the search space. Among the A* searches, the "ignore preconditions"
+heuristic produces the solution with the least time. The "levelsum" heuristic greatly reduces the number of expansions,
+goal tests and new nodes, but takes more time than the other two A* searches since the implementation of levelsum is
+very inefficient - it keeps recreating the plan graph every time it is invoked. Put another way, the big-O performance
+of the "levelsum" heuristic is best but the constants overwhelm the real performance of the implementation.
+
+# Problem 3 
+
+The optimal sequence of actions to solve this problem has `r p3_shortest_plan_len` steps which are show below:
+```
+Load(C2, P2, JFK)
+Fly(P2, JFK, ORD)
+Load(C4, P2, ORD)
+Fly(P2, ORD, SFO)
+Load(C1, P1, SFO)
+Fly(P1, SFO, ATL)
+Load(C3, P1, ATL)
+Fly(P1, ATL, JFK)
+Unload(C4, P2, SFO)
+Unload(C3, P1, JFK)
+Unload(C2, P2, SFO)
+Unload(C1, P1, JFK)
+```
+This plan was discovered using the following searches and heuristics: `r p3_shortest_heuristics`.
+
+The table below shows how various searches and heuristics performed on this problem:
+```{r p3_table, echo=FALSE, include=TRUE}
+kable(df[df$Problem == 'Air Cargo Problem 3', -which(names(df) %in% c("Problem"))],
+      digits = 3)
+```
+
+Most of the observations for this problem are similar to problem 2. Again, three searches do not run in a reasonable 
+amount of time - breadth first tree search, depth limited search and recursive best first search with the h1 heuristic. 
+In all these searches, redundant pairs of actions that don't chnage the state add to the size of the search space. Among 
+the A* searches, the "ignore preconditions" heuristic produces the solution with the least time. The "levelsum" 
+heuristic greatly reduces the number of expansions, goal tests and new nodes, but takes more time than the other two 
+A* searches since the implementation of levelsum is very inefficient - it keeps recreating the plan graph every 
+time it is invoked. Put another way, the big-O performance of the "levelsum" heuristic is best but the constants 
+overwhelm the real performance of the implementation.
+
+# Visualizations
+
+The following pages show two plots:
+1. a plot with the time taken by each of the searches/heuristics for the three problems. The y-axis
+uses a log scale to accentuate differences between the problems and searches. 
+2. a plot with the new nodes for the searches/heuristics for the three problems. The y-axis
+uses a log scale to accentuate differences between the problems and searches. 
+
+```{r plot1, echo=FALSE, include=TRUE}
+plot <- ggplot(df, aes(x = Heuristic, y = Time, group = Problem, col = Problem)) + 
+  geom_point(size = 3, shape = 20, na.rm = TRUE) + 
+  facet_grid(Problem ~ .) +
+  scale_y_log10() +
+  ggtitle("Speed of Searches/Heuristics") +
+  xlab("Search / Heuristic") + 
+  ylab("Time log(sec)") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
+plot
+```
+
+```{r plot2, echo=FALSE, include=TRUE}
+plot <- ggplot(df, aes(x = Heuristic, y = New.Nodes, group = Problem, col = Problem)) + 
+  geom_point(size = 3, shape = 20, na.rm = TRUE) + 
+  facet_grid(Problem ~ .) +
+  scale_y_log10() +
+  ggtitle("Nodes per Searches/Heuristics") +
+  xlab("Search / Heuristic") + 
+  ylab("Nodes") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
+plot
+```
