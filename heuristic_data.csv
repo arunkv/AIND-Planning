@@ -1,4 +1,5 @@
 "Problem","Heuristic","Expansions","Goal Tests","New Nodes","Plan Length","Time"
+
 "Air Cargo Problem 1","breadth_first_search",43,56,180,6,0.0.030293314019218087
 "Air Cargo Problem 1","breadth_first_tree_search",1458,1459,5960,6,1.0823757070174906
 "Air Cargo Problem 1","depth_first_graph_search",21,22,84,20,0.014743331004865468
@@ -6,9 +7,11 @@
 "Air Cargo Problem 1","uniform_cost_search",55,57.224,6,0.041075928980717435
 "Air Cargo Problem 1","recursive_best_first_search with h_1",4229,4230,17023,6,2.9070295889978297
 "Air Cargo Problem 1","greedy_best_first_graph_search with h_1",7,9,28,6,0.004867910000029951
-"Air Cargo Problem 1","astar_search with h_1",
-"Air Cargo Problem 1","astar_search with h_ignore_preconditions",
+
+"Air Cargo Problem 1","astar_search with h_1",55,57,224,6,0.05695717502385378
+"Air Cargo Problem 1","astar_search with h_ignore_preconditions",41,43,170,6,0.07709120700019412
 "Air Cargo Problem 1","astar_search with h_pg_levelsum",
+
 "Air Cargo Problem 2","breadth_first_search",3343,4609,30509,9,14.339981975994306
 "Air Cargo Problem 2","breadth_first_tree_search",
 "Air Cargo Problem 2","depth_first_graph_search",624,625,5602,619,3.3665120860096067
@@ -16,16 +19,19 @@
 "Air Cargo Problem 2","uniform_cost_search",4853,4855,44041,9,43.71600272000069
 "Air Cargo Problem 2","recursive_best_first_search with h_1",
 "Air Cargo Problem 2","greedy_best_first_graph_search with h_1",998,1000,8982,21,7.773787858022843
-"Air Cargo Problem 2","astar_search with h_1",
-"Air Cargo Problem 2","astar_search with h_ignore_preconditions",
+
+"Air Cargo Problem 2","astar_search with h_1",4853,4855,44041,9,50.68816801797948
+"Air Cargo Problem 2","astar_search with h_ignore_preconditions",1506,1508,13820,9,28.742105917976005
 "Air Cargo Problem 2","astar_search with h_pg_levelsum",
-"Air Cargo Problem 3","breadth_first_search",
+
+"Air Cargo Problem 3","breadth_first_search",14663,18098,129631,12,113.74425548900035
 "Air Cargo Problem 3","breadth_first_tree_search",
-"Air Cargo Problem 3","depth_first_graph_search",
+"Air Cargo Problem 3","depth_first_graph_search",408,409,3364,392,2.022352867992595
 "Air Cargo Problem 3","depth_limited_search",
-"Air Cargo Problem 3","uniform_cost_search",
+"Air Cargo Problem 3","uniform_cost_search",18235,18237,159716,12,506.1244421749725
 "Air Cargo Problem 3","recursive_best_first_search with h_1",
-"Air Cargo Problem 3","greedy_best_first_graph_search with h_1",
-"Air Cargo Problem 3","astar_search with h_1",
-"Air Cargo Problem 3","astar_search with h_ignore_preconditions",
+"Air Cargo Problem 3","greedy_best_first_graph_search with h_1",5614,5616,49429,22,113.93764890599414
+
+"Air Cargo Problem 3","astar_search with h_1",18235,18237,159716,12,502.2826720850135
+"Air Cargo Problem 3","astar_search with h_ignore_preconditions",5118,5120,45650,12,156.65564950500266
 "Air Cargo Problem 3","astar_search with h_pg_levelsum",

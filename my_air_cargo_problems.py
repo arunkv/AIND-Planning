@@ -186,12 +186,15 @@ class AirCargoProblem(Problem):
         executed.
         '''
         # implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
+
+        # Start with the node state as the cover
         cover = set(decode_state(node.state, self.state_map).pos)
         goal = set(self.goal)
         action_count = 0
         while not goal.issubset(cover):
             max_cover_count = len(goal.intersection(cover))
             max_cover_action = None
+            # Find the action that maximally improves cover i.e., gets us closer to the goal
             for action in self.actions_list:
                 action_result = cover.difference(action.effect_rem).union(action.effect_add)
                 cover_count = len(goal.intersection(action_result))
@@ -201,6 +204,7 @@ class AirCargoProblem(Problem):
             if max_cover_action is None:
                 break # No action improves cover
             else:
+                # Update the cover with the max cover action
                 cover = cover.difference(max_cover_action.effect_rem).union(max_cover_action.effect_add)
                 action_count += 1
         return action_count
