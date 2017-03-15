@@ -5,7 +5,9 @@ date: "3/12/2017"
 output:
   pdf_document:
     fig_height: 10
+    fig_width: 7
     latex_engine: xelatex
+    toc: false
 ---
 
 ```{r setup, echo=FALSE, include=FALSE}
@@ -41,97 +43,107 @@ This paper discusses the solutions for the three planning problems in the Air Ca
 # Problem 1 
 
 The optimal sequence of actions to solve this problem has `r p1_shortest_plan_len` steps which are show below:
-```
-Load(C1, P1, SFO)
-Load(C2, P2, JFK)
-Fly(P2, JFK, SFO)
-Unload(C2, P2, SFO)
-Fly(P1, SFO, JFK)
-Unload(C1, P1, JFK)
-```
+
+1. `Load(C1, P1, SFO)`
+2. `Load(C2, P2, JFK)`
+3. `Fly(P2, JFK, SFO)`
+4. `Unload(C2, P2, SFO)`
+5. `Fly(P1, SFO, JFK)`
+6. `Unload(C1, P1, JFK)`
+
 This plan was discovered using the following searches and heuristics: `r p1_shortest_heuristics`.
 
 The table below shows how various searches and heuristics performed on this problem:
 ```{r p1_table, echo=FALSE, include=TRUE}
-kable(df[df$Problem == 'Air Cargo Problem 1', -which(names(df) %in% c("Problem"))],
-      digits = 3)
+p1_df <- df[df$Problem == 'Air Cargo Problem 1', -which(names(df) %in% c("Problem"))]
+kable(p1_df, digits = 3, row.names = FALSE, caption = "Comparison of searches and heuristics for problem 1")
 ```
 
-For this problem, the greedy best first search is fastest and also finds the same optimal solution discovered by
-breadth first search. Given the very small number of fluents, the greedy algorithm has very little work in reaching
-the solution.The depth first graph search and depth limited search produce plans with a large number of steps since
-they search redundant actions (e.g: Load followed by an immediate Unload) which effectively don't change the state.
+For this problem, _breadth first search_, produces the optimal plan since it is _complete_. It is also _optimal_ in this case
+since the cost of all actions is the same. The _greedy best first search_ outperforms all the other algorithms and 
+also finds the same optimal solution discovered by breadth first search. Given the very small number of fluents, the 
+greedy algorithm has very little work in reaching the solution. The _depth first graph search_ and _depth limited search_ 
+produce plans with a large number of steps since they search redundant actions (e.g: Load followed by an immediate Unload)
+which effectively don't change the state. These algorithms are also not _complete_ or _optimal_. For this problem,
+depth limited search produces the worst plan due to the choice of teh depth limit which makes it miss optimal plans. However,
+as expected, the depth first searches are much more compact in their use of memory and create fewer nodes than the breadth
+first searches. Also none of the A* searches outperform the breadth first search since the problem space is so small that
+the cost of computing the heuristics outweighs the cost of traversing the search space using breadth first search.
 
 # Problem 2 
 
 The optimal sequence of actions to solve this problem has `r p2_shortest_plan_len` steps which are show below:
-```
-Load(C1, P1, SFO)
-Fly(P1, SFO, JFK)
-Load(C2, P2, JFK)
-Fly(P2, JFK, SFO)
-Load(C3, P3, ATL)
-Fly(P3, ATL, SFO)
-Unload(C3, P3, SFO)
-Unload(C2, P2, SFO)
-Unload(C1, P1, JFK)
-```
+
+1. `Load(C1, P1, SFO)`
+2. `Fly(P1, SFO, JFK)`
+3. `Load(C2, P2, JFK)`
+4. `Fly(P2, JFK, SFO)`
+5. `Load(C3, P3, ATL)`
+6. `Fly(P3, ATL, SFO)`
+7. `Unload(C3, P3, SFO)`
+8. `Unload(C2, P2, SFO)`
+9. `Unload(C1, P1, JFK)`
+
 This plan was discovered using the following searches and heuristics: `r p2_shortest_heuristics`.
 
 The table below shows how various searches and heuristics performed on this problem:
 ```{r p2_table, echo=FALSE, include=TRUE}
-kable(df[df$Problem == 'Air Cargo Problem 2', -which(names(df) %in% c("Problem"))],
-      digits = 3)
+p2_df <- df[df$Problem == 'Air Cargo Problem 2', -which(names(df) %in% c("Problem"))]
+kable(p2_df, digits = 3, row.names = FALSE, caption = "Comparison of searches and heuristics for problem 2")
 ```
 
-For this problem, three searches do not run in a reasonable amount of time - breadth first tree search, depth
-limited search and recursive best first search with the h1 heuristic. In all these searches, redundant pairs of
+For this problem, three searches do not run in a reasonable amount of time - _breadth first tree search_, _depth
+limited search_ and _recursive best first search_ with the h1 heuristic. In all these searches, redundant pairs of
 actions that don't chnage the state add to the size of the search space. Among the A* searches, the "ignore preconditions"
 heuristic produces the solution with the least time. The "levelsum" heuristic greatly reduces the number of expansions,
 goal tests and new nodes, but takes more time than the other two A* searches since the implementation of levelsum is
 very inefficient - it keeps recreating the plan graph every time it is invoked. Put another way, the big-O performance
-of the "levelsum" heuristic is best but the constants overwhelm the real performance of the implementation.
+of the "levelsum" heuristic is best but the constants overwhelm the real performance of the implementation. Again the 
+_depth first search_ produces a suboptimal plan since it is not _complete_ while _breadth first search_ produces the optimal
+plan since it is both _complete_ and _optimal_ (cost of all actions is identical). As with problem 1, none of the A* 
+searches outperform the breadth first search since the problem space is so small that the cost of computing the 
+heuristics outweighs the cost of traversing the search space using breadth first search.
 
 # Problem 3 
 
 The optimal sequence of actions to solve this problem has `r p3_shortest_plan_len` steps which are show below:
-```
-Load(C2, P2, JFK)
-Fly(P2, JFK, ORD)
-Load(C4, P2, ORD)
-Fly(P2, ORD, SFO)
-Load(C1, P1, SFO)
-Fly(P1, SFO, ATL)
-Load(C3, P1, ATL)
-Fly(P1, ATL, JFK)
-Unload(C4, P2, SFO)
-Unload(C3, P1, JFK)
-Unload(C2, P2, SFO)
-Unload(C1, P1, JFK)
-```
+
+1. `Load(C2, P2, JFK)`
+2. `Fly(P2, JFK, ORD)`
+3. `Load(C4, P2, ORD)`
+4. `Fly(P2, ORD, SFO)`
+5. `Load(C1, P1, SFO)`
+6. `Fly(P1, SFO, ATL)`
+7. `Load(C3, P1, ATL)`
+8. `Fly(P1, ATL, JFK)`
+9. `Unload(C4, P2, SFO)`
+10. `Unload(C3, P1, JFK)`
+11. `Unload(C2, P2, SFO)`
+12. `Unload(C1, P1, JFK)`
+
 This plan was discovered using the following searches and heuristics: `r p3_shortest_heuristics`.
 
 The table below shows how various searches and heuristics performed on this problem:
 ```{r p3_table, echo=FALSE, include=TRUE}
-kable(df[df$Problem == 'Air Cargo Problem 3', -which(names(df) %in% c("Problem"))],
-      digits = 3)
+p3_df <- df[df$Problem == 'Air Cargo Problem 3', -which(names(df) %in% c("Problem"))]
+kable(p3_df, digits = 3, row.names = FALSE, caption = "Comparison of searches and heuristics for problem 3")
 ```
 
 Most of the observations for this problem are similar to problem 2. Again, three searches do not run in a reasonable 
-amount of time - breadth first tree search, depth limited search and recursive best first search with the h1 heuristic. 
+amount of time - _breadth first tree search_, _depth limited search_ and _recursive best first search_ with the h1 heuristic. 
 In all these searches, redundant pairs of actions that don't chnage the state add to the size of the search space. Among 
-the A* searches, the "ignore preconditions" heuristic produces the solution with the least time. The "levelsum" 
-heuristic greatly reduces the number of expansions, goal tests and new nodes, but takes more time than the other two 
-A* searches since the implementation of levelsum is very inefficient - it keeps recreating the plan graph every 
-time it is invoked. Put another way, the big-O performance of the "levelsum" heuristic is best but the constants 
-overwhelm the real performance of the implementation.
+the A* searches, the "ignore preconditions" heuristic produces the solution with the least time. The time taken by this
+search is comparable to that of breadth first search. The "levelsum" heuristic greatly reduces the number of expansions, 
+goal tests and new nodes, but takes more time than the other two A* searches since the implementation of levelsum is 
+very inefficient - it keeps recreating the plan graph every time it is invoked. 
 
 # Visualizations
 
 The following pages show two plots:
-1. a plot with the time taken by each of the searches/heuristics for the three problems. The y-axis
+
+1. A plot with the time taken by each of the searches/heuristics for the three problems. The y-axis
 uses a log scale to accentuate differences between the problems and searches. 
-2. a plot with the new nodes for the searches/heuristics for the three problems. The y-axis
+2. A plot with the new nodes for the searches/heuristics for the three problems. The y-axis
 uses a log scale to accentuate differences between the problems and searches. 
 
 ```{r plot1, echo=FALSE, include=TRUE}
@@ -139,7 +151,7 @@ plot <- ggplot(df, aes(x = Heuristic, y = Time, group = Problem, col = Problem))
   geom_point(size = 3, shape = 20, na.rm = TRUE) + 
   facet_grid(Problem ~ .) +
   scale_y_log10() +
-  ggtitle("Speed of Searches/Heuristics") +
+  ggtitle("Figure 1: Speed of Searches/Heuristics") +
   xlab("Search / Heuristic") + 
   ylab("Time log(sec)") + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
@@ -151,9 +163,9 @@ plot <- ggplot(df, aes(x = Heuristic, y = New.Nodes, group = Problem, col = Prob
   geom_point(size = 3, shape = 20, na.rm = TRUE) + 
   facet_grid(Problem ~ .) +
   scale_y_log10() +
-  ggtitle("Nodes per Searches/Heuristics") +
+  ggtitle("Figure 2: Nodes per Searches/Heuristics") +
   xlab("Search / Heuristic") + 
-  ylab("Nodes") + 
+  ylab("Nodes (log)") + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
 plot
 ```
