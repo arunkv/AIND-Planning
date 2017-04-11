@@ -1,7 +1,7 @@
 ---
 title: 'AIND Project 3: Planning Solution Search Analysis'
 author: "Arun K Viswanathan"
-date: "3/12/2017"
+date: "4/11/2017"
 output:
   pdf_document:
     fig_height: 10
@@ -59,7 +59,7 @@ p1_df <- df[df$Problem == 'Air Cargo Problem 1', -which(names(df) %in% c("Proble
 kable(p1_df, digits = 3, row.names = FALSE, caption = "Comparison of searches and heuristics for problem 1")
 ```
 
-For this problem, _breadth first search_, produces the optimal plan since it is _complete_. It is also _optimal_ in this case
+For this problem, _breadth first search_, produces the optimal plan since it is _complete_. (See Wikipedia https://en.wikipedia.org/wiki/Breadth-first_search#Completeness_and_optimality for definition of _complete_.) It is also _optimal_ in this case
 since the cost of all actions is the same. The _greedy best first search_ outperforms all the other algorithms and 
 also finds the same optimal solution discovered by breadth first search. Given the very small number of fluents, the 
 greedy algorithm has very little work in reaching the solution. The _depth first graph search_ and _depth limited search_ 
